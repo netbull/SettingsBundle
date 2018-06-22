@@ -3,7 +3,7 @@ services:
       alias: netbull.settings.settings_manager
 
     netbull.settings.settings_manager:
-        class: Dmishh\SettingsBundle\Manager\SettingsManager
+        class: NetBull\SettingsBundle\Manager\SettingsManager
         arguments:
             - '@doctrine.orm.entity_manager'
             - '@netbull.settings.serializer'

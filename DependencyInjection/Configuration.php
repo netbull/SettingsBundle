@@ -30,38 +30,42 @@ class Configuration implements ConfigurationInterface
                 ->end()
                 ->arrayNode('settings')
                     ->useAttributeAsKey('group')
-                    ->addDefaultsIfNotSet()
                     ->arrayPrototype()
-                        ->children()
-                            ->scalarNode('type')->defaultValue('text')->end()
+                        ->arrayPrototype()
 
-                            ->variableNode('options')
-                                ->info('The options given to the form builder')
-                                ->defaultValue(array())
-                                ->validate()
-                                    ->always(function ($v) {
-                                        if (!is_array($v)) {
-                                            throw new InvalidTypeException();
-                                        }
+                            ->addDefaultsIfNotSet()
+                            ->children()
+                                ->scalarNode('type')->defaultValue('text')->end()
 
-                                        return $v;
-                                    })
+                                ->variableNode('options')
+                                    ->info('The options given to the form builder')
+                                    ->defaultValue(array())
+                                    ->validate()
+                                        ->always(function ($v) {
+                                            if (!is_array($v)) {
+                                                throw new InvalidTypeException();
+                                            }
+
+                                            return $v;
+                                        })
+                                    ->end()
                                 ->end()
-                            ->end()
-                            ->variableNode('constraints')
-                                ->info('The constraints on this option. Example, use constraints found in Symfony\Component\Validator\Constraints')
-                                ->defaultValue(array())
-                                ->validate()
-                                    ->always(function ($v) {
-                                        if (!is_array($v)) {
-                                            throw new InvalidTypeException();
-                                        }
+                                ->variableNode('constraints')
+                                    ->info('The constraints on this option. Example, use constraints found in Symfony\Component\Validator\Constraints')
+                                    ->defaultValue(array())
+                                    ->validate()
+                                        ->always(function ($v) {
+                                            if (!is_array($v)) {
+                                                throw new InvalidTypeException();
+                                            }
 
-                                        return $v;
-                                    })
+                                            return $v;
+                                        })
+                                    ->end()
                                 ->end()
                             ->end()
                         ->end()
+
                     ->end()
                 ->end()
             ->end();

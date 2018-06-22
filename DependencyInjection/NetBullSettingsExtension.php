@@ -31,7 +31,7 @@ class NetBullSettingsExtension extends Extension
         $loader->load('services.yml');
 
         // Configure the correct storage
-        if ($config['cache_service'] === null) {
+        if (null === $config['cache_service']) {
             $container->removeDefinition('netbull.settings.cached_settings_manager');
         } else {
             $container->getDefinition('netbull.settings.cached_settings_manager')
@@ -41,5 +41,13 @@ class NetBullSettingsExtension extends Extension
             // set an alias to make sure the cached settings manager is the default
             $container->setAlias('settings_manager', 'netbull.settings.cached_settings_manager');
         }
+    }
+
+    /**
+     * @return string
+     */
+    public function getAlias()
+    {
+        return 'netbull_settings';
     }
 }

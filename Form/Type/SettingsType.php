@@ -7,6 +7,7 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 use NetBull\SettingsBundle\Exception\SettingsException;
+use NetBull\SettingsBundle\Exception\WrongGroupException;
 
 /**
  * Class SettingsType
@@ -32,7 +33,11 @@ class SettingsType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        foreach ($this->settingsConfiguration as $name => $configuration) {
+        if (!isset($this->settingsConfiguration[$options['group']])) {
+            throw new WrongGroupException($options['group']);
+        }
+
+        foreach ($this->settingsConfiguration[$options['group']] as $name => $configuration) {
             // If setting's value exists in data and setting isn't disabled
             if (array_key_exists($name, $options['data']) && !in_array($name, $options['disabled_settings'])) {
                 $fieldType = $configuration['type'];
@@ -79,6 +84,8 @@ class SettingsType extends AbstractType
         $resolver->setDefaults([
             'disabled_settings' => [],
         ]);
+
+        $resolver->setRequired([ 'group' ]);
     }
 
     /**

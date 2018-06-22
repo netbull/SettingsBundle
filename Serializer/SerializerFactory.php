@@ -15,7 +15,7 @@ class SerializerFactory
     /**
      * @param string $name short name of serializer (ex.: php) or full class name
      *
-     * @throws \NetBull\SettingsBundle\Exception\UnknownSerializerException
+     * @throws UnknownSerializerException
      *
      * @return SerializerInterface
      */

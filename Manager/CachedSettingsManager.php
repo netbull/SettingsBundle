@@ -6,7 +6,8 @@ use Psr\Cache\CacheItemPoolInterface;
 use Psr\Cache\InvalidArgumentException;
 
 /**
- * @author Tobias Nyholm
+ * Class CachedSettingsManager
+ * @package NetBull\SettingsBundle\Manager
  */
 class CachedSettingsManager implements SettingsManagerInterface
 {
@@ -42,93 +43,98 @@ class CachedSettingsManager implements SettingsManagerInterface
 
     /**
      * @param string $name
+     * @param string $group
      * @param null $default
      * @return mixed
      */
-    public function get($name, $default = null)
+    public function get($name, string $group, $default = null)
     {
-        if (null !== $cached = $this->fetchFromCache($name)) {
+        if (null !== $cached = $this->fetchFromCache($name, $group)) {
             return $cached;
         }
 
-        $value = $this->settingsManager->get($name, $default);
-        $this->storeInCache($name, $value);
+        $value = $this->settingsManager->get($name, $group, $default);
+        $this->storeInCache($name, $value, $group);
 
         return $value;
     }
 
     /**
-     * @return array|mixed
+     * @inheritdoc
      */
-    public function all()
+    public function all(string $group)
     {
-        if (null !== $cached = $this->fetchFromCache(null)) {
+        if (null !== $cached = $this->fetchFromCache(null, $group)) {
             return $cached;
         }
 
-        $value = $this->settingsManager->all();
-        $this->storeInCache(null, $value);
+        $value = $this->settingsManager->all($group);
+        $this->storeInCache(null, $value, $group);
 
         return $value;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function set($name, $value, string $group)
+    {
+        $this->invalidateCache($name, $group);
+        $this->invalidateCache(null, $group);
+
+        return $this->settingsManager->set($name, $value, $group);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setMany(array $settings, string $group)
+    {
+        foreach ($settings as $key => $value) {
+            $this->invalidateCache($key, $group);
+        }
+        $this->invalidateCache(null, $group);
+
+        return $this->settingsManager->setMany($settings, $group);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function clear($name, string $group)
+    {
+        $this->invalidateCache($name, $group);
+        $this->invalidateCache(null, $group);
+
+        return $this->settingsManager->clear($name, $group);
     }
 
     /**
      * @param string $name
-     * @param mixed $value
-     * @return SettingsManagerInterface
-     */
-    public function set($name, $value)
-    {
-        $this->invalidateCache($name);
-        $this->invalidateCache(null);
-
-        return $this->settingsManager->set($name, $value);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setMany(array $settings)
-    {
-        foreach ($settings as $key => $value) {
-            $this->invalidateCache($key);
-        }
-        $this->invalidateCache(null);
-
-        return $this->settingsManager->setMany($settings);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function clear($name)
-    {
-        $this->invalidateCache($name);
-        $this->invalidateCache(null);
-
-        return $this->settingsManager->clear($name);
-    }
-
-    /**
-     * @param $name
+     * @param string $group
+     *
      * @return bool TRUE if the cache entry was successfully deleted, FALSE otherwise.
      */
-    protected function invalidateCache($name)
+    protected function invalidateCache($name, string $group)
     {
         try {
-            return $this->storage->deleteItem($this->getCacheKey($name));
+            return $this->storage->deleteItem($this->getCacheKey($name, $group));
         } catch (InvalidArgumentException $e) {
             return false;
         }
     }
 
     /**
-     * @param $name
-     * @return mixed|null
+     * Get from cache.
+     *
+     * @param string $name
+     * @param string $group
+     *
+     * @return mixed|null if nothing was found in cache
      */
-    protected function fetchFromCache($name)
+    protected function fetchFromCache($name, string $group)
     {
-        $cacheKey = $this->getCacheKey($name);
+        $cacheKey = $this->getCacheKey($name, $group);
 
         try {
             return $this->storage->getItem($cacheKey)->get();
@@ -138,33 +144,35 @@ class CachedSettingsManager implements SettingsManagerInterface
     }
 
     /**
-     * @param $name
-     * @param $value
-     * @return bool
+     * Store in cache.
+     *
+     * @param string $name
+     * @param mixed $value
+     * @param string $group
+     *
+     * @return bool TRUE if the entry was successfully stored in the cache, FALSE otherwise.
      */
-    protected function storeInCache($name, $value)
+    protected function storeInCache($name, $value, string $group)
     {
         try {
-            $item = $this->storage->getItem($this->getCacheKey($name))
+            $item = $this->storage->getItem($this->getCacheKey($name, $group))
                 ->set($value)
                 ->expiresAfter($this->cacheLifeTime);
         } catch (InvalidArgumentException $e) {
-            return null;
-        }
-
-        if (!$item) {
-            return null;
+            return false;
         }
 
         return $this->storage->save($item);
     }
 
     /**
-     * @param $key
+     * @param string $key
+     * @param string $group
+     *
      * @return string
      */
-    protected function getCacheKey($key)
+    protected function getCacheKey($key, string $group)
     {
-        return sprintf(self::PREFIX, $key);
+        return sprintf(self::PREFIX, $group, $key);
     }
 }

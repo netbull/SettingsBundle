@@ -10,10 +10,11 @@ class UnknownSettingException extends SettingsException
 {
     /**
      * UnknownSettingException constructor.
+     * @param $group
      * @param $settingName
      */
-    public function __construct($settingName)
+    public function __construct($group, $settingName)
     {
-        parent::__construct(sprintf('Unknown setting "%s"', $settingName));
+        parent::__construct(sprintf('Unknown setting "%s" in group "%s"', $settingName, $group));
     }
 }

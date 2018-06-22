@@ -57,66 +57,75 @@ class SettingsManager implements SettingsManagerInterface
      * @param string $group
      * @param null $default
      * @return mixed|null
+     * @throws UnknownSettingException
+     * @throws WrongGroupException
      */
-    public function get($name, string $group = Setting::GROUP_GENERAL, $default = null)
+    public function get($name, string $group, $default = null)
     {
-        $this->validateSetting($name);
-        $this->loadSettings();
+        $this->validateSetting($name, $group);
+        $this->loadSettings($group);
 
-        return $this->settings[$name] ?? $default;
+        return $this->settings[$group][$name] ?? $default;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function all(string $group = Setting::GROUP_GENERAL)
+    public function all(string $group)
     {
-        $this->loadSettings($group);
-
-        if ($owner === null) {
-            return $this->globalSettings;
+        try {
+            $this->loadSettings($group);
+        } catch (UnknownSettingException $e) {
+            return [];
         }
 
-        $settings = $this->ownerSettings[$owner->getSettingIdentifier()];
+        return $this->settings[$group] ?? [];
+    }
 
-        // If some user setting is not defined, please use the value from global
-        foreach ($settings as $key => $value) {
-            if ($value === null && isset($this->globalSettings[$key])) {
-                $settings[$key] = $this->globalSettings[$key];
+    /**
+     * {@inheritdoc}
+     */
+    public function set($name, $value, string $group)
+    {
+        try {
+            $this->setWithoutFlush($name, $value, $group);
+        } catch (UnknownSettingException | WrongGroupException $e) {
+            return $this;
+        }
+
+        try {
+            return $this->flush($name, $group);
+        } catch (UnknownSettingException $e) {
+            return $this;
+        }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setMany(array $settings, string $group)
+    {
+        foreach ($settings as $name => $value) {
+            try {
+                $this->setWithoutFlush($name, $value, $group);
+            } catch (UnknownSettingException | WrongGroupException $e) {
+                return $this;
             }
         }
 
-        return $settings;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function set($name, $value, SettingsOwnerInterface $owner = null)
-    {
-        $this->setWithoutFlush($name, $value, $owner);
-
-        return $this->flush($name, $owner);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setMany(array $settings, SettingsOwnerInterface $owner = null)
-    {
-        foreach ($settings as $name => $value) {
-            $this->setWithoutFlush($name, $value, $owner);
+        try {
+            return $this->flush(array_keys($settings), $group);
+        } catch (UnknownSettingException $e) {
+            return $this;
         }
-
-        return $this->flush(array_keys($settings), $owner);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function clear($name, SettingsOwnerInterface $owner = null)
+    public function clear($name, string $group)
     {
-        return $this->set($name, null, $owner);
+        return $this->set($name, null, $group);
     }
 
     /**
@@ -124,20 +133,19 @@ class SettingsManager implements SettingsManagerInterface
      *
      * @param string $name
      * @param mixed $value
-     * @param SettingsOwnerInterface|null $owner
+     * @param string $group
      *
      * @return SettingsManager
+     *
+     * @throws UnknownSettingException
+     * @throws WrongGroupException
      */
-    private function setWithoutFlush($name, $value, SettingsOwnerInterface $owner = null)
+    private function setWithoutFlush($name, $value, string $group)
     {
-        $this->validateSetting($name, $owner);
-        $this->loadSettings($owner);
+        $this->validateSetting($name, $group);
+        $this->loadSettings($group);
 
-        if ($owner === null) {
-            $this->globalSettings[$name] = $value;
-        } else {
-            $this->ownerSettings[$owner->getSettingIdentifier()][$name] = $value;
-        }
+        $this->settings[$group][$name] = $value;
 
         return $this;
     }
@@ -146,30 +154,28 @@ class SettingsManager implements SettingsManagerInterface
      * Flushes settings defined by $names to database.
      *
      * @param string|array $names
-     * @param SettingsOwnerInterface|null $owner
-     *
-     * @throws \Dmishh\SettingsBundle\Exception\UnknownSerializerException
+     * @param string $group
      *
      * @return SettingsManager
+     *
+     * @throws UnknownSettingException
      */
-    private function flush($names, SettingsOwnerInterface $owner = null)
+    private function flush($names, string $group)
     {
         $names = (array)$names;
 
-        $settings = $this->repository->findBy(
-            array(
-                'name' => $names,
-                'ownerId' => $owner === null ? null : $owner->getSettingIdentifier(),
-            )
-        );
+        $settings = $this->repository->findBy([
+            'name' => $names,
+            'group' => $group,
+        ]);
 
         // Assert: $settings might be a smaller set than $names
 
         // For each settings that you are trying to save
         foreach ($names as $name) {
             try {
-                $value = $this->get($name, $owner);
-            } catch (WrongScopeException $e) {
+                $value = $this->get($name, $group);
+            } catch (WrongGroupException $e) {
                 continue;
             }
 
@@ -180,9 +186,7 @@ class SettingsManager implements SettingsManagerInterface
                 // if the setting does not exist in DB, create it
                 $setting = new Setting();
                 $setting->setName($name);
-                if ($owner !== null) {
-                    $setting->setOwnerId($owner->getSettingIdentifier());
-                }
+                $setting->setGroup($group);
                 $this->em->persist($setting);
             }
 
@@ -209,6 +213,8 @@ class SettingsManager implements SettingsManagerInterface
                 return $setting;
             }
         }
+
+        return null;
     }
 
     /**
@@ -219,77 +225,63 @@ class SettingsManager implements SettingsManagerInterface
      *
      * @return SettingsManager
      *
-     * @throws \NetBull\SettingsBundle\Exception\UnknownSettingException
-     * @throws \NetBull\SettingsBundle\Exception\WrongGroupException
+     * @throws UnknownSettingException
+     * @throws WrongGroupException
      */
-    private function validateSetting($name, string $group = Setting::GROUP_GENERAL)
+    private function validateSetting($name, string $group)
     {
         // Name validation
         if (!is_string($name) || !array_key_exists($name, $this->settingsConfiguration)) {
-            throw new UnknownSettingException($name);
+            throw new UnknownSettingException($group, $name);
         }
 
-        // Scope validation
-        $settingGroup = $this->settingsConfiguration[$name]['group'];
-        if ($group === $settingGroup) {
-            throw new WrongGroupException($group, $name);
+        // Group validation
+        if (!isset($this->settings[$group])) {
+            throw new WrongGroupException($group);
         }
 
         return $this;
     }
 
     /**
-     * Settings lazy loading.
-     *
-     * @param SettingsOwnerInterface|null $owner
-     *
-     * @return SettingsManager
+     * @param string $group
+     * @return $this
+     * @throws UnknownSettingException
      */
-    private function loadSettings(SettingsOwnerInterface $owner = null)
+    private function loadSettings(string $group)
     {
         // Global settings
-        if ($this->globalSettings === null) {
-            $this->globalSettings = $this->getSettingsFromRepository();
-        }
-
-        // User settings
-        if ($owner !== null && ($this->ownerSettings === null || !array_key_exists(
-                    $owner->getSettingIdentifier(),
-                    $this->ownerSettings
-                ))
-        ) {
-            $this->ownerSettings[$owner->getSettingIdentifier()] = $this->getSettingsFromRepository($owner);
+        if (empty($this->settings[$group])) {
+            $this->settings[$group] = $this->getSettingsFromRepository($group);
         }
 
         return $this;
     }
 
     /**
-     * Retreives settings from repository.
+     * Retrieves settings from repository.
      *
-     * @param SettingsOwnerInterface|null $owner
-     *
-     * @throws \Dmishh\SettingsBundle\Exception\UnknownSerializerException
+     * @param string $group
      *
      * @return array
+     *
+     * @throws UnknownSettingException
      */
-    private function getSettingsFromRepository(SettingsOwnerInterface $owner = null)
+    private function getSettingsFromRepository(string $group)
     {
-        $settings = array();
+        $settings = [];
 
-        foreach (array_keys($this->settingsConfiguration) as $name) {
+        foreach (array_keys($this->settingsConfiguration[$group]) as $name) {
             try {
-                $this->validateSetting($name, $owner);
+                $this->validateSetting($name, $group);
                 $settings[$name] = null;
-            } catch (WrongScopeException $e) {
+            } catch (WrongGroupException $e) {
                 continue;
             }
         }
 
         /** @var Setting $setting */
-        foreach ($this->repository->findBy(
-            array('ownerId' => $owner === null ? null : $owner->getSettingIdentifier())
-        ) as $setting) {
+        foreach ($this->repository->findBy([ 'group' => $group ]) as $setting) {
             if (array_key_exists($setting->getName(), $settings)) {
                 $settings[$setting->getName()] = $this->serializer->unserialize($setting->getValue());
             }

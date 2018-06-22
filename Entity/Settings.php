@@ -10,9 +10,6 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Setting
 {
-    const GROUP_GENERAL = 'general';
-    const GROUP_STORE = 'store';
-
     /**
      * @var int
      *
@@ -41,7 +38,7 @@ class Setting
      *
      * @ORM\Column(type="string", nullable=true)
      */
-    private $group = self::GROUP_GENERAL;
+    private $group;
 
     /**
      * @return int

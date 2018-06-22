@@ -26,8 +26,8 @@ class SettingsExtension extends \Twig_Extension
     public function getFunctions()
     {
         return array(
-            new \Twig_SimpleFunction('get_setting', array($this, 'getSetting')),
-            new \Twig_SimpleFunction('get_all_settings', array($this, 'getAllSettings')),
+            new \Twig_SimpleFunction('get_setting', [$this, 'getSetting']),
+            new \Twig_SimpleFunction('get_all_settings', [$this, 'getAllSettings']),
         );
     }
 
@@ -40,7 +40,7 @@ class SettingsExtension extends \Twig_Extension
      *
      * @return mixed
      */
-    public function getSetting($name, string $group = null, $default = null)
+    public function getSetting($name, string $group, $default = null)
     {
         return $this->settingsManager->get($name, $group, $default);
     }
@@ -52,7 +52,7 @@ class SettingsExtension extends \Twig_Extension
      *
      * @return array
      */
-    public function getAllSettings(string $group = null)
+    public function getAllSettings(string $group)
     {
         return $this->settingsManager->all($group);
     }
