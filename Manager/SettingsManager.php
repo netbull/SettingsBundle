@@ -134,7 +134,7 @@ class SettingsManager implements SettingsManagerInterface
         $groups = [];
         foreach ($settings as $name => $value) {
             // Find the group
-            $parts = explode('.', $name);
+            $parts = explode(':', $name);
             $group = $parts[0];
             if (!isset($this->settings[$group])) {
                 throw new WrongGroupException($group);

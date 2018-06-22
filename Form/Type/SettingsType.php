@@ -33,23 +33,24 @@ class SettingsType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         if ($options['group']) {
-            $this->addFields($builder, $this->settingsConfiguration[$options['group']], $options);
+            $this->addFields($builder, $this->settingsConfiguration[$options['group']], $options, $options['group']);
         } else {
-            foreach ($this->settingsConfiguration as $group) {
-                $this->addFields($builder, $group, $options);
+            foreach ($this->settingsConfiguration as $group => $settings) {
+                $this->addFields($builder, $settings, $options, $group);
             }
         }
     }
 
     /**
      * @param FormBuilderInterface $builder
-     * @param array $group
+     * @param array $settings
      * @param array $options
+     * @param string $group
      * @throws SettingsException
      */
-    private function addFields(FormBuilderInterface $builder, array $group, array $options)
+    private function addFields(FormBuilderInterface $builder, array $settings, array $options, string $group)
     {
-        foreach ($group as $name => $configuration) {
+        foreach ($settings as $name => $configuration) {
             // If setting's value exists in data and setting isn't disabled
             if (array_key_exists($name, $options['data']) && !in_array($name, $options['disabled_settings'])) {
                 $fieldType = $configuration['type'];
@@ -84,7 +85,7 @@ class SettingsType extends AbstractType
                     );
                 }
 
-                $type = sprintf('%s.%s', $group, $name);
+                $type = sprintf('%s:%s', $group, $name);
                 $builder->add($type, $fieldType, $fieldOptions);
             }
         }
