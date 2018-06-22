@@ -93,6 +93,6 @@ class NetBullSettingsType extends AbstractType
      */
     public function getBlockPrefix()
     {
-        return 'settings_management';
+        return 'netbull_settings_management';
     }
 }
