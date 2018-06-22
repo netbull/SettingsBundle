@@ -166,7 +166,7 @@ class SettingsManager implements SettingsManagerInterface
 
         $settings = $this->repository->findBy([
             'name' => $names,
-            'group' => $group,
+            'grouping' => $group,
         ]);
 
         // Assert: $settings might be a smaller set than $names
@@ -186,7 +186,7 @@ class SettingsManager implements SettingsManagerInterface
                 // if the setting does not exist in DB, create it
                 $setting = new Setting();
                 $setting->setName($name);
-                $setting->setGroup($group);
+                $setting->setGrouping($group);
                 $this->em->persist($setting);
             }
 
@@ -281,7 +281,7 @@ class SettingsManager implements SettingsManagerInterface
         }
 
         /** @var Setting $setting */
-        foreach ($this->repository->findBy([ 'group' => $group ]) as $setting) {
+        foreach ($this->repository->findBy([ 'grouping' => $group ]) as $setting) {
             if (array_key_exists($setting->getName(), $settings)) {
                 $settings[$setting->getName()] = $this->serializer->unserialize($setting->getValue());
             }
