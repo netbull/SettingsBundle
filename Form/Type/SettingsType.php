@@ -37,7 +37,24 @@ class SettingsType extends AbstractType
             throw new WrongGroupException($options['group']);
         }
 
-        foreach ($this->settingsConfiguration[$options['group']] as $name => $configuration) {
+        if ($options['group']) {
+            $this->addFields($builder, $this->settingsConfiguration[$options['group']], $options);
+        } else {
+            foreach ($this->settingsConfiguration as $group) {
+                $this->addFields($builder, $group, $options);
+            }
+        }
+    }
+
+    /**
+     * @param FormBuilderInterface $builder
+     * @param array $group
+     * @param array $options
+     * @throws SettingsException
+     */
+    private function addFields(FormBuilderInterface $builder, array $group, array $options)
+    {
+        foreach ($group as $name => $configuration) {
             // If setting's value exists in data and setting isn't disabled
             if (array_key_exists($name, $options['data']) && !in_array($name, $options['disabled_settings'])) {
                 $fieldType = $configuration['type'];
@@ -83,9 +100,8 @@ class SettingsType extends AbstractType
     {
         $resolver->setDefaults([
             'disabled_settings' => [],
+            'group' => null,
         ]);
-
-        $resolver->setRequired([ 'group' ]);
     }
 
     /**
