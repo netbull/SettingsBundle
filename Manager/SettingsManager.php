@@ -50,6 +50,7 @@ class SettingsManager implements SettingsManagerInterface
         $this->repository = $em->getRepository(Setting::class);
         $this->serializer = $serializer;
         $this->settingsConfiguration = $settingsConfiguration;
+        $this->settings = array_map(function ($group) { return []; }, $settingsConfiguration);
     }
 
     /**
@@ -73,11 +74,11 @@ class SettingsManager implements SettingsManagerInterface
      */
     public function all(string $group)
     {
-        try {
-            $this->loadSettings($group);
-        } catch (UnknownSettingException $e) {
-            return [];
-        }
+//        try {
+        $this->loadSettings($group);
+//        } catch (UnknownSettingException $e) {
+//            return [];
+//        }
 
         return $this->settings[$group] ?? [];
     }
@@ -231,7 +232,7 @@ class SettingsManager implements SettingsManagerInterface
     private function validateSetting($name, string $group)
     {
         // Name validation
-        if (!is_string($name) || !array_key_exists($name, $this->settingsConfiguration)) {
+        if (!is_string($name) || !array_key_exists($name, $this->settingsConfiguration[$group])) {
             throw new UnknownSettingException($group, $name);
         }
 
