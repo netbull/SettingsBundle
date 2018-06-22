@@ -1,6 +1,7 @@
 services:
     settings_manager:
       alias: netbull.settings.settings_manager
+      public: true
 
     netbull.settings.settings_manager:
         class: NetBull\SettingsBundle\Manager\SettingsManager
@@ -8,10 +9,12 @@ services:
             - '@doctrine.orm.entity_manager'
             - '@netbull.settings.serializer'
             - '%settings_manager.settings%'
+        public: true
 
     netbull.settings.cached_settings_manager:
         class: NetBull\SettingsBundle\Manager\CachedSettingsManager
         arguments: ['@netbull.settings.settings_manager', ~, ~]
+        public: true
 
     netbull.settings.serializer_factory:
         class: NetBull\SettingsBundle\Serializer\SerializerFactory
@@ -20,6 +23,7 @@ services:
         class: NetBull\SettingsBundle\Serializer\PhpSerializer
         factory: ['@netbull.settings.serializer_factory', create]
         arguments: ['%settings_manager.serialization%']
+        public: true
 
     form.type.settings_management:
         class: NetBull\SettingsBundle\Form\Type\SettingsType
