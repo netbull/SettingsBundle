@@ -122,6 +122,41 @@ class SettingsManager implements SettingsManagerInterface
     }
 
     /**
+     * @param array $settings
+     *
+     * @return array
+     *
+     * @throws UnknownSettingException
+     * @throws WrongGroupException
+     */
+    public function persistSettingsFromForm(array $settings)
+    {
+        $groups = [];
+        foreach ($settings as $name => $value) {
+            // Find the group
+            $parts = explode('.', $name);
+            $group = $parts[0];
+            if (!isset($this->settings[$group])) {
+                throw new WrongGroupException($group);
+            }
+
+            if (1 === count($parts)) {
+                throw new UnknownSettingException($group, '');
+            }
+
+            array_shift($parts);
+            $name = implode('.', $parts);
+            if (!isset($output[$group])) {
+                $output[$group] = [];
+            }
+
+            $output[$group][$name] = $value;
+        }
+
+        return $groups;
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function setMany(array $settings, string $group)

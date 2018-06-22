@@ -7,7 +7,6 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 use NetBull\SettingsBundle\Exception\SettingsException;
-use NetBull\SettingsBundle\Exception\WrongGroupException;
 
 /**
  * Class SettingsType
@@ -33,10 +32,6 @@ class SettingsType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        if (!isset($this->settingsConfiguration[$options['group']])) {
-            throw new WrongGroupException($options['group']);
-        }
-
         if ($options['group']) {
             $this->addFields($builder, $this->settingsConfiguration[$options['group']], $options);
         } else {
@@ -88,7 +83,9 @@ class SettingsType extends AbstractType
                         array_combine($fieldOptions['choices'], $fieldOptions['choices'])
                     );
                 }
-                $builder->add($name, $fieldType, $fieldOptions);
+
+                $type = sprintf('%s.%s', $group, $name);
+                $builder->add($type, $fieldType, $fieldOptions);
             }
         }
     }
