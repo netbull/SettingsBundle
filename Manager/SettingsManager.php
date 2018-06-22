@@ -74,13 +74,33 @@ class SettingsManager implements SettingsManagerInterface
      */
     public function all(string $group)
     {
-//        try {
-        $this->loadSettings($group);
-//        } catch (UnknownSettingException $e) {
-//            return [];
-//        }
+        try {
+            $this->loadSettings($group);
+        } catch (UnknownSettingException $e) {
+            return [];
+        }
 
         return $this->settings[$group] ?? [];
+    }
+
+    /**
+     * @return array|mixed
+     */
+    public function allGroups()
+    {
+        try {
+            foreach (array_keys($this->settingsConfiguration) as $group) {
+                $this->loadSettings($group);
+            }
+        } catch (UnknownSettingException $e) {
+            return [];
+        }
+
+        $output = [];
+        foreach ($this->settings as $settings) {
+            $output = array_merge($output, $settings);
+        }
+        return $output ?? [];
     }
 
     /**
