@@ -158,7 +158,7 @@ class SettingsManager implements SettingsManagerInterface
      *
      * @return SettingsManager
      *
-     * @throws UnknownSettingException
+     * @throws \NetBull\SettingsBundle\Exception\UnknownSettingException
      */
     private function flush($names, string $group)
     {

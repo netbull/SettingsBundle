@@ -34,11 +34,11 @@ class Setting
     private $value;
 
     /**
-     * @var string|null
+     * @var string
      *
-     * @ORM\Column(type="string", nullable=true)
+     * @ORM\Column(type="string")
      */
-    private $group;
+    private $grouping;
 
     /**
      * @return int
@@ -89,22 +89,18 @@ class Setting
     }
 
     /**
-     * @return null|string
+     * @return string
      */
-    public function getGroup(): ?string
+    public function getGrouping(): string
     {
-        return $this->group;
+        return $this->grouping;
     }
 
     /**
-     * @param null|string $group
-     *
-     * @return Setting
+     * @param string $grouping
      */
-    public function setGroup(?string $group): Setting
+    public function setGrouping(string $grouping): void
     {
-        $this->group = $group;
-
-        return $this;
+        $this->grouping = $grouping;
     }
 }
