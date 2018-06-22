@@ -22,7 +22,7 @@ services:
         arguments: ['%settings_manager.serialization%']
 
     form.type.settings_management:
-        class: NetBull\SettingsBundle\Form\Type\SettingsType
+        class: NetBull\SettingsBundle\Form\Type\NetBullSettingsType
         arguments:
             - '%settings_manager.settings%'
         tags:

@@ -10,10 +10,10 @@ use NetBull\SettingsBundle\Exception\SettingsException;
 use NetBull\SettingsBundle\Exception\WrongGroupException;
 
 /**
- * Class SettingsType
+ * Class NetBullSettingsType
  * @package NetBull\SettingsBundle\Form\Type
  */
-class SettingsType extends AbstractType
+class NetBullSettingsType extends AbstractType
 {
     protected $settingsConfiguration;
 
