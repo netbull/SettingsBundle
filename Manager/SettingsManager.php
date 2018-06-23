@@ -72,21 +72,33 @@ class SettingsManager implements SettingsManagerInterface
     /**
      * {@inheritdoc}
      */
-    public function all(string $group)
+    public function all(string $group, $forForm = false)
     {
+        if (!isset($this->settings[$group])) {
+            throw new WrongGroupException($group);
+        }
+
         try {
             $this->loadSettings($group);
         } catch (UnknownSettingException $e) {
             return [];
         }
 
-        return $this->settings[$group] ?? [];
+        $output = [];
+        if ($forForm) {
+            foreach ($this->settings[$group] as $name => $setting) {
+                $output[$group . '_' . $name] = $setting;
+            }
+        } else {
+            $output = $this->settings[$group];
+        }
+        return $output;
     }
 
     /**
      * @return array|mixed
      */
-    public function allGroups()
+    public function allGroups($forForm = false)
     {
         try {
             foreach (array_keys($this->settingsConfiguration) as $group) {
@@ -97,8 +109,14 @@ class SettingsManager implements SettingsManagerInterface
         }
 
         $output = [];
-        foreach ($this->settings as $settings) {
-            $output = array_merge($output, $settings);
+        foreach ($this->settings as $group => $settings) {
+            if ($forForm) {
+                foreach ($settings as $name => $setting) {
+                    $output[$group . '_' . $name] = $setting;
+                }
+            } else {
+                $output = array_merge($output, $settings);
+            }
         }
         return $output ?? [];
     }
@@ -131,10 +149,10 @@ class SettingsManager implements SettingsManagerInterface
      */
     public function persistSettingsFromForm(array $settings)
     {
-        $groups = [];
+        $output = [];
         foreach ($settings as $name => $value) {
             // Find the group
-            $parts = explode(':', $name);
+            $parts = explode('_', $name);
             $group = $parts[0];
             if (!isset($this->settings[$group])) {
                 throw new WrongGroupException($group);
@@ -145,7 +163,7 @@ class SettingsManager implements SettingsManagerInterface
             }
 
             array_shift($parts);
-            $name = implode('.', $parts);
+            $name = implode('_', $parts);
             if (!isset($output[$group])) {
                 $output[$group] = [];
             }
@@ -153,7 +171,7 @@ class SettingsManager implements SettingsManagerInterface
             $output[$group][$name] = $value;
         }
 
-        return $groups;
+        return $output;
     }
 
     /**

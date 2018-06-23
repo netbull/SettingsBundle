@@ -7,6 +7,7 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 use NetBull\SettingsBundle\Exception\SettingsException;
+use Symfony\Component\VarDumper\VarDumper;
 
 /**
  * Class SettingsType
@@ -39,6 +40,8 @@ class SettingsType extends AbstractType
                 $this->addFields($builder, $settings, $options, $group);
             }
         }
+
+        VarDumper::dump($builder->getData());
     }
 
     /**
@@ -51,8 +54,9 @@ class SettingsType extends AbstractType
     private function addFields(FormBuilderInterface $builder, array $settings, array $options, string $group)
     {
         foreach ($settings as $name => $configuration) {
+            $type = sprintf('%s_%s', $group, $name);
             // If setting's value exists in data and setting isn't disabled
-            if (array_key_exists($name, $options['data']) && !in_array($name, $options['disabled_settings'])) {
+            if (array_key_exists($type, $options['data']) && !in_array($name, $options['disabled_settings'])) {
                 $fieldType = $configuration['type'];
                 $fieldOptions = $configuration['options'];
                 $fieldOptions['constraints'] = $configuration['constraints'];
@@ -85,7 +89,6 @@ class SettingsType extends AbstractType
                     );
                 }
 
-                $type = sprintf('%s:%s', $group, $name);
                 $builder->add($type, $fieldType, $fieldOptions);
             }
         }
