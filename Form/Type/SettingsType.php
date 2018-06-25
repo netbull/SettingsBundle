@@ -7,7 +7,6 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 use NetBull\SettingsBundle\Exception\SettingsException;
-use Symfony\Component\VarDumper\VarDumper;
 
 /**
  * Class SettingsType
@@ -40,8 +39,6 @@ class SettingsType extends AbstractType
                 $this->addFields($builder, $settings, $options, $group);
             }
         }
-
-        VarDumper::dump($builder->getData());
     }
 
     /**
