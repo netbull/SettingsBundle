@@ -36,7 +36,7 @@ class Setting
     /**
      * @var string
      *
-     * @ORM\Column(type="string")
+     * @ORM\Column(name="grp", type="string")
      */
     private $grouping;
 
