@@ -3,6 +3,9 @@ services:
       alias: netbull.settings.settings_manager
       public: true
 
+    NetBull\SettingsBundle\Manager\SettingsManagerInterface:
+      alias: netbull.settings.settings_manager
+
     netbull.settings.settings_manager:
         class: NetBull\SettingsBundle\Manager\SettingsManager
         arguments:
