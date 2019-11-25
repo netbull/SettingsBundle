@@ -3,11 +3,13 @@
 namespace NetBull\SettingsBundle\Twig;
 
 use NetBull\SettingsBundle\Manager\SettingsManagerInterface;
+use Twig\Extension\AbstractExtension;
+use Twig\TwigFunction;
 
 /**
  * Extension for retrieving settings in Twig templates.
  */
-class SettingsExtension extends \Twig_Extension
+class SettingsExtension extends AbstractExtension
 {
     /**
      * @var SettingsManagerInterface
@@ -26,8 +28,8 @@ class SettingsExtension extends \Twig_Extension
     public function getFunctions()
     {
         return array(
-            new \Twig_SimpleFunction('get_setting', [$this, 'getSetting']),
-            new \Twig_SimpleFunction('get_all_settings', [$this, 'getAllSettings']),
+            new TwigFunction('get_setting', [$this, 'getSetting']),
+            new TwigFunction('get_all_settings', [$this, 'getAllSettings']),
         );
     }
 
