@@ -14,7 +14,7 @@
     },
     "autoload": {
         "psr-4": {
-            "NetBull\\SettingsBundle\\": ""
+            "NetBull\\SettingsBundle\\": "src/"
         }
     },
     "suggest": {
