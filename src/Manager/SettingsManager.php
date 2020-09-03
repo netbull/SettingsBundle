@@ -2,8 +2,8 @@
 
 namespace NetBull\SettingsBundle\Manager;
 
-use Doctrine\Common\Persistence\ObjectManager;
-
+use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\EntityRepository;
 use NetBull\SettingsBundle\Entity\Setting;
 use NetBull\SettingsBundle\Exception\WrongGroupException;
 use NetBull\SettingsBundle\Serializer\SerializerInterface;
@@ -21,12 +21,12 @@ class SettingsManager implements SettingsManagerInterface
     private $settings;
 
     /**
-     * @var \Doctrine\Common\Persistence\ObjectManager
+     * @var EntityManagerInterface
      */
     private $em;
 
     /**
-     * @var \Doctrine\ORM\EntityRepository
+     * @var EntityRepository
      */
     private $repository;
 
@@ -41,11 +41,13 @@ class SettingsManager implements SettingsManagerInterface
     private $settingsConfiguration;
 
     /**
-     * @param ObjectManager $em
+     * SettingsManager constructor.
+     * @param EntityManagerInterface $em
      * @param SerializerInterface $serializer
      * @param array $settingsConfiguration
      */
-    public function __construct(ObjectManager $em, SerializerInterface $serializer, array $settingsConfiguration = []) {
+    public function __construct(EntityManagerInterface $em, SerializerInterface $serializer, array $settingsConfiguration = [])
+    {
         $this->em = $em;
         $this->repository = $em->getRepository(Setting::class);
         $this->serializer = $serializer;
@@ -232,7 +234,7 @@ class SettingsManager implements SettingsManagerInterface
      *
      * @return SettingsManager
      *
-     * @throws \NetBull\SettingsBundle\Exception\UnknownSettingException
+     * @throws UnknownSettingException
      */
     private function flush($names, string $group)
     {
