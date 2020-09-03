@@ -6,10 +6,9 @@
     "type": "symfony-bundle",
     "license": "AGPL-3.0-or-later",
     "require": {
-        "php": "^7.2.5",
         "psr/cache": "^1.0",
-        "symfony/framework-bundle": "5.0.*",
-        "symfony/form": "5.0.*",
+        "symfony/framework-bundle": "5.1.*",
+        "symfony/form": "5.1.*",
         "doctrine/orm": "^2.7.2"
     },
     "autoload": {
