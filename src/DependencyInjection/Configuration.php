@@ -6,16 +6,12 @@ use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 use Symfony\Component\Config\Definition\Exception\InvalidTypeException;
 
-/**
- * Class Configuration
- * @package NetBull\SettingsBundle\DependencyInjection
- */
 class Configuration implements ConfigurationInterface
 {
     /**
-     * {@inheritdoc}
+     * @return TreeBuilder
      */
-    public function getConfigTreeBuilder()
+    public function getConfigTreeBuilder(): TreeBuilder
     {
         $treeBuilder = new TreeBuilder('netbull_settings');
         $rootNode = $treeBuilder->getRootNode();
@@ -39,7 +35,7 @@ class Configuration implements ConfigurationInterface
 
                                 ->variableNode('options')
                                     ->info('The options given to the form builder')
-                                    ->defaultValue(array())
+                                    ->defaultValue([])
                                     ->validate()
                                         ->always(function ($v) {
                                             if (!is_array($v)) {
@@ -52,7 +48,7 @@ class Configuration implements ConfigurationInterface
                                 ->end()
                                 ->variableNode('constraints')
                                     ->info('The constraints on this option. Example, use constraints found in Symfony\Component\Validator\Constraints')
-                                    ->defaultValue(array())
+                                    ->defaultValue([])
                                     ->validate()
                                         ->always(function ($v) {
                                             if (!is_array($v)) {
@@ -76,7 +72,7 @@ class Configuration implements ConfigurationInterface
     /**
      * @return string
      */
-    public function getAlias()
+    public function getAlias(): string
     {
         return 'netbull_settings';
     }

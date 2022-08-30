@@ -5,19 +5,16 @@ namespace NetBull\SettingsBundle\Form\Type;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-
 use NetBull\SettingsBundle\Exception\SettingsException;
 
-/**
- * Class SettingsType
- * @package NetBull\SettingsBundle\Form\Type
- */
 class SettingsType extends AbstractType
 {
+    /**
+     * @var array
+     */
     protected $settingsConfiguration;
 
     /**
-     * SettingsType constructor.
      * @param array $settingsConfiguration
      */
     public function __construct(array $settingsConfiguration)
@@ -60,7 +57,7 @@ class SettingsType extends AbstractType
 
                 // Validator constraints
                 if (!empty($fieldOptions['constraints']) && is_array($fieldOptions['constraints'])) {
-                    $constraints = array();
+                    $constraints = [];
                     foreach ($fieldOptions['constraints'] as $class => $constraintOptions) {
                         if (class_exists($class)) {
                             $constraints[] = new $class($constraintOptions);
@@ -92,7 +89,7 @@ class SettingsType extends AbstractType
     }
 
     /**
-     * {@inheritdoc}
+     * @param OptionsResolver $resolver
      */
     public function configureOptions(OptionsResolver $resolver)
     {
@@ -103,9 +100,9 @@ class SettingsType extends AbstractType
     }
 
     /**
-     * {@inheritdoc}
+     * @return string
      */
-    public function getBlockPrefix()
+    public function getBlockPrefix(): string
     {
         return 'netbull_settings_management';
     }

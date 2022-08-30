@@ -3,16 +3,11 @@
 namespace NetBull\SettingsBundle\Manager;
 
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\EntityRepository;
 use NetBull\SettingsBundle\Entity\Setting;
 use NetBull\SettingsBundle\Exception\WrongGroupException;
 use NetBull\SettingsBundle\Serializer\SerializerInterface;
 use NetBull\SettingsBundle\Exception\UnknownSettingException;
 
-/**
- * Class SettingsManager
- * @package NetBull\SettingsBundle\Manager
- */
 class SettingsManager implements SettingsManagerInterface
 {
     /**
@@ -26,11 +21,6 @@ class SettingsManager implements SettingsManagerInterface
     private $em;
 
     /**
-     * @var EntityRepository
-     */
-    private $repository;
-
-    /**
      * @var SerializerInterface
      */
     private $serializer;
@@ -41,7 +31,6 @@ class SettingsManager implements SettingsManagerInterface
     private $settingsConfiguration;
 
     /**
-     * SettingsManager constructor.
      * @param EntityManagerInterface $em
      * @param SerializerInterface $serializer
      * @param array $settingsConfiguration
@@ -49,10 +38,9 @@ class SettingsManager implements SettingsManagerInterface
     public function __construct(EntityManagerInterface $em, SerializerInterface $serializer, array $settingsConfiguration = [])
     {
         $this->em = $em;
-        $this->repository = $em->getRepository(Setting::class);
         $this->serializer = $serializer;
         $this->settingsConfiguration = $settingsConfiguration;
-        $this->settings = array_map(function ($group) { return []; }, $settingsConfiguration);
+        $this->settings = array_map(function () { return []; }, $settingsConfiguration);
     }
 
     /**
@@ -63,7 +51,7 @@ class SettingsManager implements SettingsManagerInterface
      * @throws UnknownSettingException
      * @throws WrongGroupException
      */
-    public function get($name, string $group, $default = null)
+    public function get(string $name, string $group, $default = null)
     {
         $this->validateSetting($name, $group);
         $this->loadSettings($group);
@@ -72,9 +60,12 @@ class SettingsManager implements SettingsManagerInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @param string $group
+     * @param bool $forForm
+     * @return array
+     * @throws WrongGroupException
      */
-    public function all(string $group, $forForm = false)
+    public function all(string $group, bool $forForm = false): array
     {
         if (!isset($this->settings[$group])) {
             throw new WrongGroupException($group);
@@ -98,9 +89,10 @@ class SettingsManager implements SettingsManagerInterface
     }
 
     /**
-     * @return array|mixed
+     * @param bool $forForm
+     * @return array
      */
-    public function allGroups($forForm = false)
+    public function allGroups(bool $forForm = false): array
     {
         try {
             foreach (array_keys($this->settingsConfiguration) as $group) {
@@ -124,9 +116,12 @@ class SettingsManager implements SettingsManagerInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @param string $name
+     * @param $value
+     * @param string $group
+     * @return SettingsManagerInterface
      */
-    public function set($name, $value, string $group)
+    public function set(string $name, $value, string $group): SettingsManagerInterface
     {
         try {
             $this->setWithoutFlush($name, $value, $group);
@@ -143,13 +138,11 @@ class SettingsManager implements SettingsManagerInterface
 
     /**
      * @param array $settings
-     *
      * @return array
-     *
      * @throws UnknownSettingException
      * @throws WrongGroupException
      */
-    public function persistSettingsFromForm(array $settings)
+    public function persistSettingsFromForm(array $settings): array
     {
         $output = [];
         foreach ($settings as $name => $value) {
@@ -177,9 +170,11 @@ class SettingsManager implements SettingsManagerInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @param array $settings
+     * @param string $group
+     * @return SettingsManagerInterface
      */
-    public function setMany(array $settings, string $group)
+    public function setMany(array $settings, string $group): SettingsManagerInterface
     {
         foreach ($settings as $name => $value) {
             try {
@@ -197,9 +192,11 @@ class SettingsManager implements SettingsManagerInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @param string $name
+     * @param string $group
+     * @return SettingsManagerInterface
      */
-    public function clear($name, string $group)
+    public function clear(string $name, string $group): SettingsManagerInterface
     {
         return $this->set($name, null, $group);
     }
@@ -210,13 +207,11 @@ class SettingsManager implements SettingsManagerInterface
      * @param string $name
      * @param mixed $value
      * @param string $group
-     *
-     * @return SettingsManager
-     *
+     * @return SettingsManagerInterface
      * @throws UnknownSettingException
      * @throws WrongGroupException
      */
-    private function setWithoutFlush($name, $value, string $group)
+    private function setWithoutFlush(string $name, $value, string $group): SettingsManagerInterface
     {
         $this->validateSetting($name, $group);
         $this->loadSettings($group);
@@ -231,23 +226,21 @@ class SettingsManager implements SettingsManagerInterface
      *
      * @param string|array $names
      * @param string $group
-     *
-     * @return SettingsManager
-     *
+     * @return SettingsManagerInterface
      * @throws UnknownSettingException
      */
-    private function flush($names, string $group)
+    private function flush($names, string $group): SettingsManagerInterface
     {
         $names = (array)$names;
 
-        $settings = $this->repository->findBy([
+        $settings = $this->em->getRepository(Setting::class)->findBy([
             'name' => $names,
             'grouping' => $group,
         ]);
 
         // Assert: $settings might be a smaller set than $names
 
-        // For each settings that you are trying to save
+        // For each setting that you are trying to save
         foreach ($names as $name) {
             try {
                 $value = $this->get($name, $group);
@@ -279,10 +272,9 @@ class SettingsManager implements SettingsManagerInterface
      *
      * @param Setting[] $haystack
      * @param string $needle
-     *
      * @return Setting|null
      */
-    protected function findSettingByName($haystack, $needle)
+    protected function findSettingByName(array $haystack, string $needle): ?Setting
     {
         foreach ($haystack as $setting) {
             if ($setting->getName() === $needle) {
@@ -294,20 +286,23 @@ class SettingsManager implements SettingsManagerInterface
     }
 
     /**
-     * Checks that $name is valid setting and it's scope is also valid.
+     * Checks that $name is valid setting, and it's scope is also valid.
      *
      * @param string $name
      * @param string $group
-     *
-     * @return SettingsManager
-     *
+     * @return SettingsManagerInterface
      * @throws UnknownSettingException
      * @throws WrongGroupException
      */
-    private function validateSetting($name, string $group)
+    private function validateSetting(string $name, string $group): SettingsManagerInterface
     {
         // Name validation
-        if (!is_string($name) || !array_key_exists($name, $this->settingsConfiguration[$group])) {
+        if (!array_key_exists($group, $this->settingsConfiguration)) {
+            throw new WrongGroupException($group);
+        }
+
+        // Name validation
+        if (!array_key_exists($name, $this->settingsConfiguration[$group])) {
             throw new UnknownSettingException($group, $name);
         }
 
@@ -321,10 +316,10 @@ class SettingsManager implements SettingsManagerInterface
 
     /**
      * @param string $group
-     * @return $this
+     * @return SettingsManagerInterface
      * @throws UnknownSettingException
      */
-    private function loadSettings(string $group)
+    private function loadSettings(string $group): SettingsManagerInterface
     {
         // Global settings
         if (empty($this->settings[$group])) {
@@ -338,12 +333,10 @@ class SettingsManager implements SettingsManagerInterface
      * Retrieves settings from repository.
      *
      * @param string $group
-     *
      * @return array
-     *
      * @throws UnknownSettingException
      */
-    private function getSettingsFromRepository(string $group)
+    private function getSettingsFromRepository(string $group): array
     {
         $settings = [];
 
@@ -357,7 +350,7 @@ class SettingsManager implements SettingsManagerInterface
         }
 
         /** @var Setting $setting */
-        foreach ($this->repository->findBy([ 'grouping' => $group ]) as $setting) {
+        foreach ($this->em->getRepository(Setting::class)->findBy([ 'grouping' => $group ]) as $setting) {
             if (array_key_exists($setting->getName(), $settings)) {
                 $settings[$setting->getName()] = $this->serializer->unserialize($setting->getValue());
             }

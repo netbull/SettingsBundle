@@ -2,10 +2,6 @@
 
 namespace NetBull\SettingsBundle\Manager;
 
-/**
- * Interface SettingsManagerInterface
- * @package NetBull\SettingsBundle\Manager
- */
 interface SettingsManagerInterface
 {
     /**
@@ -17,7 +13,7 @@ interface SettingsManagerInterface
      *
      * @return mixed
      */
-    public function get($name, string $group, $default = null);
+    public function get(string $name, string $group, $default = null);
 
     /**
      * Returns all settings as associative name-value array.
@@ -26,7 +22,7 @@ interface SettingsManagerInterface
      *
      * @return array
      */
-    public function all(string $group);
+    public function all(string $group): array;
 
     /**
      * Sets setting value by its name.
@@ -37,7 +33,7 @@ interface SettingsManagerInterface
      *
      * @return SettingsManagerInterface
      */
-    public function set($name, $value, string $group);
+    public function set(string $name, $value, string $group): SettingsManagerInterface;
 
     /**
      * Sets settings' values from associative name-value array.
@@ -47,7 +43,7 @@ interface SettingsManagerInterface
      *
      * @return SettingsManagerInterface
      */
-    public function setMany(array $settings, string $group);
+    public function setMany(array $settings, string $group): SettingsManagerInterface;
 
     /**
      * Clears setting value.
@@ -57,5 +53,5 @@ interface SettingsManagerInterface
      *
      * @return SettingsManagerInterface
      */
-    public function clear($name, string $group);
+    public function clear(string $name, string $group): SettingsManagerInterface;
 }

@@ -3,23 +3,17 @@
 namespace NetBull\SettingsBundle\Serializer;
 
 use Symfony\Component\DependencyInjection\Container;
-
 use NetBull\SettingsBundle\Exception\UnknownSerializerException;
 
-/**
- * Class SerializerFactory
- * @package NetBull\SettingsBundle\Serializer
- */
 class SerializerFactory
 {
     /**
      * @param string $name short name of serializer (ex.: php) or full class name
      *
-     * @throws UnknownSerializerException
-     *
      * @return SerializerInterface
+     * @throws UnknownSerializerException
      */
-    public static function create($name)
+    public static function create(string $name): SerializerInterface
     {
         $serializerClass = 'NetBull\\SettingsBundle\\Serializer\\' . Container::camelize($name) . 'Serializer';
 

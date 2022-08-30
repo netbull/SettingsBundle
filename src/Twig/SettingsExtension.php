@@ -17,7 +17,6 @@ class SettingsExtension extends AbstractExtension
     private $settingsManager;
 
     /**
-     * SettingsExtension constructor.
      * @param SettingsManagerInterface $settingsManager
      */
     public function __construct(SettingsManagerInterface $settingsManager)
@@ -25,7 +24,7 @@ class SettingsExtension extends AbstractExtension
         $this->settingsManager = $settingsManager;
     }
 
-    public function getFunctions()
+    public function getFunctions(): array
     {
         return array(
             new TwigFunction('get_setting', [$this, 'getSetting']),
@@ -38,11 +37,10 @@ class SettingsExtension extends AbstractExtension
      *
      * @param string $name
      * @param string $group
-     * @param string $default
-     *
+     * @param string|null $default
      * @return mixed
      */
-    public function getSetting($name, string $group, $default = null)
+    public function getSetting(string $name, string $group, string $default = null)
     {
         return $this->settingsManager->get($name, $group, $default);
     }
@@ -51,18 +49,17 @@ class SettingsExtension extends AbstractExtension
      * Proxy to SettingsManager::all.
      *
      * @param string $group
-     *
      * @return array
      */
-    public function getAllSettings(string $group)
+    public function getAllSettings(string $group): array
     {
         return $this->settingsManager->all($group);
     }
 
     /**
-     * {@inheritdoc}
+     * @return string
      */
-    public function getName()
+    public function getName(): string
     {
         return 'settings_extension';
     }

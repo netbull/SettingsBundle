@@ -9,7 +9,8 @@
         "psr/cache": "^1.0",
         "symfony/framework-bundle": "5.2.*|5.3.*|5.4.*",
         "symfony/form": "5.2.*|5.3.*|5.4.*",
-        "doctrine/orm": "^2.7.2"
+        "doctrine/orm": "^2.7.2",
+      "ext-json": "*"
     },
     "autoload": {
         "psr-4": {

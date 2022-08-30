@@ -2,17 +2,12 @@
 
 namespace NetBull\SettingsBundle\Exception;
 
-/**
- * Class UnknownSerializerException
- * @package NetBull\SettingsBundle\Exception
- */
 class UnknownSerializerException extends SettingsException
 {
     /**
-     * UnknownSerializerException constructor.
-     * @param $serializerClass
+     * @param string $serializerClass
      */
-    public function __construct($serializerClass)
+    public function __construct(string $serializerClass)
     {
         parent::__construct(sprintf('Unknown serializer class "%s"', $serializerClass));
     }

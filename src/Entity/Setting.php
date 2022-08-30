@@ -11,96 +11,94 @@ use Doctrine\ORM\Mapping as ORM;
 class Setting
 {
     /**
-     * @var int
+     * @var int|null
      *
      * @ORM\Column(type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      */
-    private $id;
+    private $id = null;
 
     /**
-     * @var string
+     * @var string|null
      *
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(nullable=true)
      */
-    private $name;
+    private $name = null;
 
     /**
      * @var string|null
      *
      * @ORM\Column(type="text", nullable=true)
      */
-    private $value;
+    private $value = null;
 
     /**
-     * @var string
+     * @var string|null
      *
-     * @ORM\Column(name="grp", type="string")
+     * @ORM\Column(name="grp", nullable=true)
      */
-    private $grouping;
+    private $grouping = null;
 
     /**
      * @return int
      */
-    public function getId()
+    public function getId(): ?int
     {
         return $this->id;
     }
 
     /**
-     * @param string $name
-     *
-     * @return Setting
+     * @return string|null
      */
-    public function setName($name)
-    {
-        $this->name = $name;
-
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getName()
+    public function getName(): ?string
     {
         return $this->name;
     }
 
     /**
-     * @param string $value
-     *
+     * @param string|null $name
      * @return Setting
      */
-    public function setValue($value)
+    public function setName(?string $name): Setting
     {
-        $this->value = $value;
-
+        $this->name = $name;
         return $this;
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getValue()
+    public function getValue(): ?string
     {
         return $this->value;
     }
 
     /**
-     * @return string
+     * @param string|null $value
+     * @return Setting
      */
-    public function getGrouping(): string
+    public function setValue(?string $value): Setting
+    {
+        $this->value = $value;
+        return $this;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getGrouping(): ?string
     {
         return $this->grouping;
     }
 
     /**
-     * @param string $grouping
+     * @param string|null $grouping
+     * @return Setting
      */
-    public function setGrouping(string $grouping): void
+    public function setGrouping(?string $grouping): Setting
     {
         $this->grouping = $grouping;
+        return $this;
     }
 }

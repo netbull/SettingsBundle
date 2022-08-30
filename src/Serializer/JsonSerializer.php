@@ -2,24 +2,26 @@
 
 namespace NetBull\SettingsBundle\Serializer;
 
-/**
- * Class JsonSerializer
- * @package NetBull\SettingsBundle\Serializer
- */
 class JsonSerializer implements SerializerInterface
 {
     /**
-     * @inheritdoc
+     * @param $data
+     * @return false|string
      */
-    public function serialize($data)
+    public function serialize($data): string
     {
-        return json_encode($data);
+        if ($result = json_encode($data)) {
+            return $result;
+        }
+
+        return '';
     }
 
     /**
-     * @inheritdoc
+     * @param string $serialized
+     * @return mixed
      */
-    public function unserialize($serialized)
+    public function unserialize(string $serialized)
     {
         return json_decode($serialized, true);
     }

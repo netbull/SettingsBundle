@@ -2,17 +2,12 @@
 
 namespace NetBull\SettingsBundle\Exception;
 
-/**
- * Class WrongGroupException
- * @package NetBull\SettingsBundle\Exception
- */
 class WrongGroupException extends SettingsException
 {
     /**
-     * WrongGroupException constructor.
-     * @param $group
+     * @param string $group
      */
-    public function __construct($group)
+    public function __construct(string $group)
     {
         parent::__construct(sprintf('Unknown group "%s"', $group));
     }

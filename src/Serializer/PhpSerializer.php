@@ -2,24 +2,22 @@
 
 namespace NetBull\SettingsBundle\Serializer;
 
-/**
- * Class PhpSerializer
- * @package NetBull\SettingsBundle\Serializer
- */
 class PhpSerializer implements SerializerInterface
 {
     /**
-     * @inheritdoc
+     * @param mixed $data
+     * @return string
      */
-    public function serialize($data)
+    public function serialize($data): string
     {
         return serialize($data);
     }
 
     /**
-     * @inheritdoc
+     * @param string $serialized
+     * @return mixed
      */
-    public function unserialize($serialized)
+    public function unserialize(string $serialized)
     {
         return unserialize($serialized);
     }
