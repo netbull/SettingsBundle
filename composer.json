@@ -6,11 +6,13 @@
     "type": "symfony-bundle",
     "license": "AGPL-3.0-or-later",
     "require": {
-        "psr/cache": "^1.0",
-        "symfony/framework-bundle": "5.2.*|5.3.*|5.4.*",
-        "symfony/form": "5.2.*|5.3.*|5.4.*",
-        "doctrine/orm": "^2.7.2",
-      "ext-json": "*"
+        "php": "8.*",
+        "ext-json": "*",
+        "psr/cache": "^2.0",
+        "doctrine/orm": "^2.9",
+        "symfony/framework-bundle": "6.4.*",
+        "symfony/form": "6.4.*",
+        "symfony/twig-bundle": "6.4.*"
     },
     "autoload": {
         "psr-4": {

@@ -6,15 +6,12 @@ use NetBull\SettingsBundle\Manager\SettingsManagerInterface;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFunction;
 
-/**
- * Extension for retrieving settings in Twig templates.
- */
 class SettingsExtension extends AbstractExtension
 {
     /**
      * @var SettingsManagerInterface
      */
-    private $settingsManager;
+    private SettingsManagerInterface $settingsManager;
 
     /**
      * @param SettingsManagerInterface $settingsManager
@@ -40,7 +37,7 @@ class SettingsExtension extends AbstractExtension
      * @param string|null $default
      * @return mixed
      */
-    public function getSetting(string $name, string $group, string $default = null)
+    public function getSetting(string $name, string $group, string $default = null): mixed
     {
         return $this->settingsManager->get($name, $group, $default);
     }

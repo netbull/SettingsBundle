@@ -12,7 +12,7 @@ class SettingsType extends AbstractType
     /**
      * @var array
      */
-    protected $settingsConfiguration;
+    protected array $settingsConfiguration;
 
     /**
      * @param array $settingsConfiguration
@@ -25,9 +25,10 @@ class SettingsType extends AbstractType
     /**
      * @param FormBuilderInterface $builder
      * @param array $options
+     * @return void
      * @throws SettingsException
      */
-    public function buildForm(FormBuilderInterface $builder, array $options)
+    public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         if ($options['group']) {
             $this->addFields($builder, $this->settingsConfiguration[$options['group']], $options, $options['group']);
@@ -43,9 +44,10 @@ class SettingsType extends AbstractType
      * @param array $settings
      * @param array $options
      * @param string $group
+     * @return void
      * @throws SettingsException
      */
-    private function addFields(FormBuilderInterface $builder, array $settings, array $options, string $group)
+    private function addFields(FormBuilderInterface $builder, array $settings, array $options, string $group): void
     {
         foreach ($settings as $name => $configuration) {
             $type = sprintf('%s_%s', $group, $name);
@@ -90,8 +92,9 @@ class SettingsType extends AbstractType
 
     /**
      * @param OptionsResolver $resolver
+     * @return void
      */
-    public function configureOptions(OptionsResolver $resolver)
+    public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
             'disabled_settings' => [],

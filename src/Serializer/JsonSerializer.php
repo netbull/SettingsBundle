@@ -5,10 +5,10 @@ namespace NetBull\SettingsBundle\Serializer;
 class JsonSerializer implements SerializerInterface
 {
     /**
-     * @param $data
-     * @return false|string
+     * @param mixed $data
+     * @return string
      */
-    public function serialize($data): string
+    public function serialize(mixed $data): string
     {
         if ($result = json_encode($data)) {
             return $result;
@@ -21,7 +21,7 @@ class JsonSerializer implements SerializerInterface
      * @param string $serialized
      * @return mixed
      */
-    public function unserialize(string $serialized)
+    public function unserialize(string $serialized): mixed
     {
         return json_decode($serialized, true);
     }

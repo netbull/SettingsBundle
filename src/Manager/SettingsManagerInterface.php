@@ -13,7 +13,7 @@ interface SettingsManagerInterface
      *
      * @return mixed
      */
-    public function get(string $name, string $group, $default = null);
+    public function get(string $name, string $group, mixed $default = null): mixed;
 
     /**
      * Returns all settings as associative name-value array.
@@ -28,12 +28,12 @@ interface SettingsManagerInterface
      * Sets setting value by its name.
      *
      * @param string $name
-     * @param string $group
      * @param mixed $value
+     * @param string $group
      *
      * @return SettingsManagerInterface
      */
-    public function set(string $name, $value, string $group): SettingsManagerInterface;
+    public function set(string $name, mixed $value, string $group): SettingsManagerInterface;
 
     /**
      * Sets settings' values from associative name-value array.

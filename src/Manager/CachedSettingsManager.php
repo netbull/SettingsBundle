@@ -10,26 +10,26 @@ class CachedSettingsManager
     const PREFIX = 'netbull_settings_%s_%s';
 
     /**
-     * @var CacheItemPoolInterface
-     */
-    private $storage;
-
-    /**
      * @var SettingsManagerInterface
      */
-    private $settingsManager;
+    private SettingsManagerInterface $settingsManager;
+
+    /**
+     * @var CacheItemPoolInterface
+     */
+    private CacheItemPoolInterface $storage;
 
     /**
      * @var int
      */
-    private $cacheLifeTime;
+    private int $cacheLifeTime;
 
     /**
      * @param SettingsManagerInterface $settingsManager
      * @param CacheItemPoolInterface $storage
-     * @param $cacheLifeTime
+     * @param int $cacheLifeTime
      */
-    public function __construct(SettingsManagerInterface $settingsManager, CacheItemPoolInterface $storage, $cacheLifeTime)
+    public function __construct(SettingsManagerInterface $settingsManager, CacheItemPoolInterface $storage, int $cacheLifeTime)
     {
         $this->settingsManager = $settingsManager;
         $this->storage = $storage;
@@ -42,7 +42,7 @@ class CachedSettingsManager
      * @param null $default
      * @return mixed
      */
-    public function get(string $name, string $group, $default = null)
+    public function get(string $name, string $group, $default = null): mixed
     {
         if (null !== $cached = $this->fetchFromCache($name, $group)) {
             return $cached;
@@ -56,9 +56,9 @@ class CachedSettingsManager
 
     /**
      * @param string $group
-     * @return array|mixed|null
+     * @return mixed
      */
-    public function all(string $group)
+    public function all(string $group): mixed
     {
         if (null !== $cached = $this->fetchFromCache(null, $group)) {
             return $cached;
@@ -72,11 +72,11 @@ class CachedSettingsManager
 
     /**
      * @param string $name
-     * @param $value
+     * @param mixed $value
      * @param string $group
      * @return SettingsManagerInterface
      */
-    public function set(string $name, $value, string $group): SettingsManagerInterface
+    public function set(string $name, mixed $value, string $group): SettingsManagerInterface
     {
         $this->invalidateCache($name, $group);
         $this->invalidateCache(null, $group);
@@ -131,7 +131,7 @@ class CachedSettingsManager
      * @param string $group
      * @return mixed|null if nothing was found in cache
      */
-    protected function fetchFromCache(string $name, string $group)
+    protected function fetchFromCache(string $name, string $group): mixed
     {
         $cacheKey = $this->getCacheKey($name, $group);
 

@@ -10,25 +10,25 @@ use NetBull\SettingsBundle\Exception\UnknownSettingException;
 
 class SettingsManager implements SettingsManagerInterface
 {
-    /**
-     * @var array
-     */
-    private $settings;
 
     /**
      * @var EntityManagerInterface
      */
-    private $em;
+    private EntityManagerInterface $em;
 
     /**
      * @var SerializerInterface
      */
-    private $serializer;
+    private SerializerInterface $serializer;
 
     /**
      * @var array
      */
-    private $settingsConfiguration;
+    private array $settingsConfiguration;
+    /**
+     * @var array
+     */
+    private array $settings;
 
     /**
      * @param EntityManagerInterface $em
@@ -46,12 +46,12 @@ class SettingsManager implements SettingsManagerInterface
     /**
      * @param string $name
      * @param string $group
-     * @param null $default
-     * @return mixed|null
+     * @param mixed $default
+     * @return mixed
      * @throws UnknownSettingException
      * @throws WrongGroupException
      */
-    public function get(string $name, string $group, $default = null)
+    public function get(string $name, string $group, mixed $default = null): mixed
     {
         $this->validateSetting($name, $group);
         $this->loadSettings($group);
@@ -98,7 +98,7 @@ class SettingsManager implements SettingsManagerInterface
             foreach (array_keys($this->settingsConfiguration) as $group) {
                 $this->loadSettings($group);
             }
-        } catch (UnknownSettingException $e) {
+        } catch (UnknownSettingException) {
             return [];
         }
 
@@ -117,11 +117,11 @@ class SettingsManager implements SettingsManagerInterface
 
     /**
      * @param string $name
-     * @param $value
+     * @param mixed $value
      * @param string $group
      * @return SettingsManagerInterface
      */
-    public function set(string $name, $value, string $group): SettingsManagerInterface
+    public function set(string $name, mixed $value, string $group): SettingsManagerInterface
     {
         try {
             $this->setWithoutFlush($name, $value, $group);
@@ -131,7 +131,7 @@ class SettingsManager implements SettingsManagerInterface
 
         try {
             return $this->flush($name, $group);
-        } catch (UnknownSettingException $e) {
+        } catch (UnknownSettingException) {
             return $this;
         }
     }
@@ -179,14 +179,14 @@ class SettingsManager implements SettingsManagerInterface
         foreach ($settings as $name => $value) {
             try {
                 $this->setWithoutFlush($name, $value, $group);
-            } catch (UnknownSettingException | WrongGroupException $e) {
+            } catch (UnknownSettingException | WrongGroupException) {
                 return $this;
             }
         }
 
         try {
             return $this->flush(array_keys($settings), $group);
-        } catch (UnknownSettingException $e) {
+        } catch (UnknownSettingException) {
             return $this;
         }
     }
@@ -207,29 +207,27 @@ class SettingsManager implements SettingsManagerInterface
      * @param string $name
      * @param mixed $value
      * @param string $group
-     * @return SettingsManagerInterface
+     * @return void
      * @throws UnknownSettingException
      * @throws WrongGroupException
      */
-    private function setWithoutFlush(string $name, $value, string $group): SettingsManagerInterface
+    private function setWithoutFlush(string $name, mixed $value, string $group): void
     {
         $this->validateSetting($name, $group);
         $this->loadSettings($group);
 
         $this->settings[$group][$name] = $value;
-
-        return $this;
     }
 
     /**
      * Flushes settings defined by $names to database.
      *
-     * @param string|array $names
+     * @param array|string $names
      * @param string $group
      * @return SettingsManagerInterface
      * @throws UnknownSettingException
      */
-    private function flush($names, string $group): SettingsManagerInterface
+    private function flush(array|string $names, string $group): SettingsManagerInterface
     {
         $names = (array)$names;
 
@@ -290,11 +288,11 @@ class SettingsManager implements SettingsManagerInterface
      *
      * @param string $name
      * @param string $group
-     * @return SettingsManagerInterface
+     * @return void
      * @throws UnknownSettingException
      * @throws WrongGroupException
      */
-    private function validateSetting(string $name, string $group): SettingsManagerInterface
+    private function validateSetting(string $name, string $group): void
     {
         // Name validation
         if (!array_key_exists($group, $this->settingsConfiguration)) {
@@ -310,23 +308,19 @@ class SettingsManager implements SettingsManagerInterface
         if (!isset($this->settings[$group])) {
             throw new WrongGroupException($group);
         }
-
-        return $this;
     }
 
     /**
      * @param string $group
-     * @return SettingsManagerInterface
+     * @return void
      * @throws UnknownSettingException
      */
-    private function loadSettings(string $group): SettingsManagerInterface
+    private function loadSettings(string $group): void
     {
         // Global settings
         if (empty($this->settings[$group])) {
             $this->settings[$group] = $this->getSettingsFromRepository($group);
         }
-
-        return $this;
     }
 
     /**
@@ -344,7 +338,7 @@ class SettingsManager implements SettingsManagerInterface
             try {
                 $this->validateSetting($name, $group);
                 $settings[$name] = null;
-            } catch (WrongGroupException $e) {
+            } catch (WrongGroupException) {
                 continue;
             }
         }

@@ -28,7 +28,6 @@ class Configuration implements ConfigurationInterface
                     ->useAttributeAsKey('group')
                     ->arrayPrototype()
                         ->arrayPrototype()
-
                             ->addDefaultsIfNotSet()
                             ->children()
                                 ->scalarNode('type')->defaultValue('text')->end()

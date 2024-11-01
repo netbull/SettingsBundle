@@ -4,44 +4,38 @@ namespace NetBull\SettingsBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @ORM\Table(name="settings")
- * @ORM\Entity
- */
+#[ORM\Table(name: 'settings')]
+#[ORM\Entity]
 class Setting
 {
     /**
      * @var int|null
-     *
-     * @ORM\Column(type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
      */
-    private $id = null;
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column(type: 'integer')]
+    private ?int $id = null;
 
     /**
      * @var string|null
-     *
-     * @ORM\Column(nullable=true)
      */
-    private $name = null;
+    #[ORM\Column(nullable: true)]
+    private ?string $name = null;
 
     /**
      * @var string|null
-     *
-     * @ORM\Column(type="text", nullable=true)
      */
-    private $value = null;
+    #[ORM\Column(nullable: true)]
+    private ?string $value = null;
 
     /**
      * @var string|null
-     *
-     * @ORM\Column(name="grp", nullable=true)
      */
-    private $grouping = null;
+    #[ORM\Column(name: 'grp', nullable: true)]
+    private ?string $grouping = null;
 
     /**
-     * @return int
+     * @return int|null
      */
     public function getId(): ?int
     {

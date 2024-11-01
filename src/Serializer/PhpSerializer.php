@@ -8,7 +8,7 @@ class PhpSerializer implements SerializerInterface
      * @param mixed $data
      * @return string
      */
-    public function serialize($data): string
+    public function serialize(mixed $data): string
     {
         return serialize($data);
     }
@@ -17,7 +17,7 @@ class PhpSerializer implements SerializerInterface
      * @param string $serialized
      * @return mixed
      */
-    public function unserialize(string $serialized)
+    public function unserialize(string $serialized): mixed
     {
         return unserialize($serialized);
     }
