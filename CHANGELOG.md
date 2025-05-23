@@ -1,3 +1,10 @@
+## [6.4.1](https://github.com/netbull/SettingsBundle/compare/v6.4.0...v6.4.1) (2025-05-23)
+
+
+### Bug Fixes
+
+* deprecations ([beb812e](https://github.com/netbull/SettingsBundle/commit/beb812eea412f2b2209404089131ea277ddbc9a2))
+
 # [6.0.0](https://github.com/netbull/SettingsBundle/compare/v5.4.3...v6.0.0) (2024-11-01)
 
 
