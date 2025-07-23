@@ -121,7 +121,7 @@ class CachedSettingsManager
     {
         try {
             return $this->storage->deleteItem($this->getCacheKey($name, $group));
-        } catch (InvalidArgumentException $e) {
+        } catch (InvalidArgumentException) {
             return false;
         }
     }
@@ -137,7 +137,7 @@ class CachedSettingsManager
 
         try {
             return $this->storage->getItem($cacheKey)->get();
-        } catch (InvalidArgumentException $e) {
+        } catch (InvalidArgumentException) {
             return null;
         }
     }
@@ -148,13 +148,13 @@ class CachedSettingsManager
      * @param string $group
      * @return bool TRUE if the entry was successfully stored in the cache, FALSE otherwise.
      */
-    protected function storeInCache(string $name, $value, string $group): bool
+    protected function storeInCache(string $name, mixed $value, string $group): bool
     {
         try {
             $item = $this->storage->getItem($this->getCacheKey($name, $group))
                 ->set($value)
                 ->expiresAfter($this->cacheLifeTime);
-        } catch (InvalidArgumentException $e) {
+        } catch (InvalidArgumentException) {
             return false;
         }
 

@@ -10,21 +10,6 @@ use NetBull\SettingsBundle\Exception\UnknownSettingException;
 
 class SettingsManager implements SettingsManagerInterface
 {
-
-    /**
-     * @var EntityManagerInterface
-     */
-    private EntityManagerInterface $em;
-
-    /**
-     * @var SerializerInterface
-     */
-    private SerializerInterface $serializer;
-
-    /**
-     * @var array
-     */
-    private array $settingsConfiguration;
     /**
      * @var array
      */
@@ -35,12 +20,12 @@ class SettingsManager implements SettingsManagerInterface
      * @param SerializerInterface $serializer
      * @param array $settingsConfiguration
      */
-    public function __construct(EntityManagerInterface $em, SerializerInterface $serializer, array $settingsConfiguration = [])
-    {
-        $this->em = $em;
-        $this->serializer = $serializer;
-        $this->settingsConfiguration = $settingsConfiguration;
-        $this->settings = array_map(function () { return []; }, $settingsConfiguration);
+    public function __construct(
+        private EntityManagerInterface $em,
+        private SerializerInterface $serializer,
+        private array $settingsConfiguration = []
+    ) {
+        $this->settings = array_map(fn () => [], $settingsConfiguration);
     }
 
     /**
@@ -73,7 +58,7 @@ class SettingsManager implements SettingsManagerInterface
 
         try {
             $this->loadSettings($group);
-        } catch (UnknownSettingException $e) {
+        } catch (UnknownSettingException) {
             return [];
         }
 
@@ -125,7 +110,7 @@ class SettingsManager implements SettingsManagerInterface
     {
         try {
             $this->setWithoutFlush($name, $value, $group);
-        } catch (UnknownSettingException | WrongGroupException $e) {
+        } catch (UnknownSettingException | WrongGroupException) {
             return $this;
         }
 
@@ -242,7 +227,7 @@ class SettingsManager implements SettingsManagerInterface
         foreach ($names as $name) {
             try {
                 $value = $this->get($name, $group);
-            } catch (WrongGroupException $e) {
+            } catch (WrongGroupException) {
                 continue;
             }
 

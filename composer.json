@@ -10,9 +10,9 @@
         "ext-json": "*",
         "psr/cache": "^2.0",
         "doctrine/orm": "^2.9",
-        "symfony/framework-bundle": "6.4.*",
-        "symfony/form": "6.4.*",
-        "symfony/twig-bundle": "6.4.*"
+        "symfony/framework-bundle": "7.2.*",
+        "symfony/form": "7.2.*",
+        "symfony/twig-bundle": "7.2.*"
     },
     "autoload": {
         "psr-4": {
