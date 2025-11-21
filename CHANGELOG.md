@@ -1,3 +1,10 @@
+## [7.0.1](https://github.com/netbull/SettingsBundle/compare/v7.0.0...v7.0.1) (2025-11-21)
+
+
+### Bug Fixes
+
+* allow versions ([b4859d3](https://github.com/netbull/SettingsBundle/commit/b4859d364dca9e8e661e355fbee92b230f288702))
+
 # [7.0.0](https://github.com/netbull/SettingsBundle/compare/v6.4.1...v7.0.0) (2025-07-23)
 
 
