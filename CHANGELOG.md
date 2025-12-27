@@ -1,3 +1,29 @@
+## [7.0.2](https://github.com/netbull/SettingsBundle/compare/v7.0.1...v7.0.2) (2025-12-11)
+
+
+### Bug Fixes
+
+* versions ([d29cbd0](https://github.com/netbull/SettingsBundle/commit/d29cbd0e6da6ce9f84733ccdca0f9b09b1b6fe67))
+
+## [7.0.1](https://github.com/netbull/SettingsBundle/compare/v7.0.0...v7.0.1) (2025-11-21)
+
+
+### Bug Fixes
+
+* allow versions ([b4859d3](https://github.com/netbull/SettingsBundle/commit/b4859d364dca9e8e661e355fbee92b230f288702))
+
+# [7.0.0](https://github.com/netbull/SettingsBundle/compare/v6.4.1...v7.0.0) (2025-07-23)
+
+
+### Bug Fixes
+
+* deprecations ([110c993](https://github.com/netbull/SettingsBundle/commit/110c9936a43a635bfbabbf6d5fb3f5c77c564e9b))
+
+
+### BREAKING CHANGES
+
+* bump versions
+
 ## [6.4.1](https://github.com/netbull/SettingsBundle/compare/v6.4.0...v6.4.1) (2025-05-23)
 
 
