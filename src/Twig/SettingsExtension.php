@@ -37,7 +37,7 @@ class SettingsExtension extends AbstractExtension
      * @param string|null $default
      * @return mixed
      */
-    public function getSetting(string $name, string $group, string $default = null): mixed
+    public function getSetting(string $name, string $group, ?string $default = null): mixed
     {
         return $this->settingsManager->get($name, $group, $default);
     }
